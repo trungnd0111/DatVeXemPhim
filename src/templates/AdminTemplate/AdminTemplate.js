@@ -4,10 +4,7 @@ import { Redirect, Route } from "react-router";
 import { TOKEN, USER_LOGIN } from "../../util/settings/config";
 import { Layout, Menu, Breadcrumb } from 'antd';
 import {
-    DesktopOutlined,
-    PieChartOutlined,
     FileOutlined,
-    TeamOutlined,
     UserOutlined,
 } from '@ant-design/icons';
 import { NavLink } from "react-router-dom";
@@ -38,19 +35,19 @@ const AdminTemplate = (props) => { //path, exact, Component
 
     if (!localStorage.getItem(USER_LOGIN)) {
         alert('Bạn không có quyền truy cập vào trang này !')
-        return <Redirect to='/home' />
+        return <Redirect to='/' />
     }
 
     if (userLogin.maLoaiNguoiDung !== 'QuanTri') {
         alert('Bạn không có quyền truy cập vào trang này !')
-        return <Redirect to='/home' />
+        return <Redirect to='/' />
 
     }
 
     const operations = <Fragment>
         {!_.isEmpty(userLogin) ? <Fragment> <button onClick={() => {
             history.push('/profile')
-        }}> <div style={{ width: 50, height: 50, display: 'flex', justifyContent: 'center', alignItems: 'center' }} className="text-2xl ml-5 rounded-full bg-red-200">{userLogin.taiKhoan.substr(0, 1)}</div></button> <button onClick={() => {
+        }}> <div style={{ width: 50, height: 50, display: 'flex', justifyContent: 'center', alignItems: 'center' }} className="text-2xl ml-5 rounded-full bg-red-200">{userLogin.taiKhoan.substr(0, 1)}</div>Hello ! {userLogin.taiKhoan}</button> <button onClick={() => {
             localStorage.removeItem(USER_LOGIN);
             localStorage.removeItem(TOKEN);
             history.push('/home');
@@ -65,24 +62,25 @@ const AdminTemplate = (props) => { //path, exact, Component
             <Layout style={{ minHeight: '100vh' }}>
                 <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
                     <div className="logo p-5">
-                        <img src="https://cyberlearn.vn/wp-content/uploads/2020/03/cyberlearn-min-new-opt2.png" alt="..." />
+                        <img src="https://thumbs.dreamstime.com/b/admin-icon-in-trendy-design-style-admin-icon-isolated-on-white-background-admin-vector-icon-simple-and-modern-flat-symbol-for-135742404.jpg" alt="..." />
                     </div>
                     <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-                        <Menu.Item key="1" icon={<UserOutlined />}>
-                            <NavLink to="/admin/users">Users</NavLink>
-                        </Menu.Item>
-                        <SubMenu key="sub1" icon={<FileOutlined />} title="Films">
-                            <Menu.Item key="10" icon={<FileOutlined />}>
+                        <SubMenu key="sub1" icon={<UserOutlined />} title="User">
+                            <Menu.Item key="1" icon={<UserOutlined />}>
+                                <NavLink to="/admin/users">Users</NavLink>
+                            </Menu.Item>
+                            <Menu.Item key="2" icon={<UserOutlined />}>
+                                <NavLink to="/admin/users/adduser">Add user</NavLink>
+                            </Menu.Item>
+                        </SubMenu>
+                        <SubMenu key="sub2" icon={<FileOutlined />} title="Films">
+                            <Menu.Item key="3" icon={<FileOutlined />}>
                                 <NavLink to="/admin/films">Films</NavLink>
                             </Menu.Item>
-                            <Menu.Item key="11" icon={<FileOutlined />}>
+                            <Menu.Item key="4" icon={<FileOutlined />}>
                                 <NavLink to="/admin/films/addnew">Add new</NavLink>
                             </Menu.Item>
                         </SubMenu>
-                        <Menu.Item key="3" icon={<DesktopOutlined />}>
-                            <NavLink to="/admin/showtimes">Showtime</NavLink>
-
-                        </Menu.Item>
                     </Menu>
                 </Sider>
                 <Layout className="site-layout">
@@ -98,6 +96,7 @@ const AdminTemplate = (props) => { //path, exact, Component
                             <Component {...propsRoute} />
                         </div>
                     </Content>
+                    <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
                 </Layout>
             </Layout>
         </Fragment>

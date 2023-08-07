@@ -1,86 +1,164 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
-import { history } from '../../../../App'
-import { Select } from 'antd';
-//Hook đa ngôn ngữ
-import { useTranslation } from 'react-i18next';
+import { history } from '../../../../App';
 
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
-import { Fragment } from 'react';
 import { TOKEN, USER_LOGIN } from '../../../../util/settings/config';
-const { Option } = Select;
+import { useState, useEffect } from 'react';
+import './Header.css'
 
+import { Link } from 'react-router-dom';
+import { notifiFunction } from '../../../../util/Notification/notification';
 
-export default function Header(props) {
+export default function Header({ isHomePage }) {
+  const [Clicked, setClicked] = useState(false);
+  const [showHeader, setShowHeader] = useState(false);
 
-    const { userLogin } = useSelector(state => state.QuanLyNguoiDungReducer)
+  const handleClick = () => {
+    setClicked(!Clicked)
+  }
 
-    const { t, i18n } = useTranslation();
+  const { userLogin } = useSelector(state => state.QuanLyNguoiDungReducer);
 
-    const handleChange = (value) => {
-        i18n.changeLanguage(value)
+  const renderLogin = () => {
+    if (_.isEmpty(userLogin)) {
+      return <Fragment>
+        <button style={{ backgroundColor: '#E71A0F' }} onClick={() => {
+          history.push('/login')
+        }} className="self-center px-6 py-3 rounded text-white">Đăng nhập</button>
+        <button onClick={() => {
+          history.push('/register')
+          handleScrollTop()
+        }} style={{ border: '1px solid', marginLeft: '10px' }} className="self-center px-6 py-3 font-semibold rounded bg-violet-600 text-coolGray-50 text-white">Đăng ký</button>
+
+      </Fragment>
     }
-    const renderLogin = () => {
-        if (_.isEmpty(userLogin)) {
-            return <Fragment>
-                <button onClick={() => {
-                    history.push('/login')
-                }} className="self-center px-8 py-3 rounded">{t('signin')}</button>
-                <button onClick={() => {
-                    history.push('./register')
-                }} className="self-center px-8 py-3 font-semibold rounded bg-violet-600 text-coolGray-50">{t('signup')}</button>
-            </Fragment>
+    return <Fragment> <button onClick={() => { 
+      history.push('/profile')
+    }} className="self-center px-5 py-2 userLog rounded">Xin chào: <span className='font-semibold text-lg text-pink-100'>{userLogin.taiKhoan}</span></button>
+      <button onClick={() => {
+        localStorage.removeItem(USER_LOGIN);
+        localStorage.removeItem(TOKEN);
+        history.push('/home');
+        window.location.reload();
+        notifiFunction('success', 'Logout Success !', `Đăng xuất thành công !`)
+      }} className="mr-5 userLog">Đăng xuất</button>
+    </Fragment>
+  }
+
+
+  useEffect(() => {
+    if (isHomePage) {
+      const handleScroll = () => {
+        if (window.pageYOffset > 0) {
+          setShowHeader(true);
+        } else {
+          setShowHeader(false);
         }
-        return <Fragment><button onClick={() => {
-            history.push('/profile')
-        }} className="self-center px-8 py-3 rounded">Hello! {userLogin.taiKhoan}</button>
+      };
 
-            <button onClick={()=>{
-                localStorage.removeItem(USER_LOGIN);
-                localStorage.removeItem(TOKEN);
-                history.push('/home');
-                window.location.reload();
-            }} className='text-white mr-5'>Đăng xuất</button>
-        </Fragment> 
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
     }
+  }, [isHomePage]);
+
+  const handleScrollTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+
+
+  if (!isHomePage) {
     return (
-        <header className="p-4 bg-coolGray-100 text-coolGray-800 bg-opacity-40 bg-black text-white fixed w-full z-10" >
-            <div className="container flex justify-between h-16 mx-auto">
-                <NavLink to='/home' aria-label="Back to homepage" className="flex items-center p-2">
-                    <img src="https://cyberlearn.vn/wp-content/uploads/2020/03/cyberlearn-min-new-opt2.png" alt="cyberlearn.vn" />
-                </NavLink>
-                <ul className="items-stretch hidden space-x-3 lg:flex">
-                    <li className="flex">
-                        <NavLink to="/home" className="flex items-center -mb-0.5 border-b-2 px-4 border-transparent text-violet-600 border-violet-600 text-white" activeClassName="border-b-2 border-white">Home</NavLink>
-                    </li>
-                    <li className="flex">
-                        <NavLink to="/contact" className="flex items-center -mb-0.5 border-b-2 px-4 border-transparent text-white" activeClassName="border-b-2 border-white">Contact</NavLink>
-                    </li>
-                    <li className="flex">
-                        <NavLink to="/news" className="flex items-center -mb-0.5 border-b-2 px-4 border-transparent text-white" activeClassName="border-b-2 border-white">News</NavLink>
-                    </li>
+      <div>
+        <>
+          <nav >
+            <NavLink to="/home">
+              <img src='https://www.cgv.vn/skin/frontend/cgv/default/images/cgvlogo.png' alt="cgv" />
+            </NavLink>
+            <div>
+              <ul id='navbar' className={Clicked ? "#navbar active" : "#navbar"}>
+                <li>
+                  {/* <NavLink className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to="/home">{t('homepage')}</NavLink> */}
+                  <NavLink
+                    className='text-success-50 text-lg'
+                    activeClassName="border-b-2 border-white text-success-50 font-bold active"
+                    exact
+                    to="/"
+                    isActive={(match, location) => {
+                      return (
+                        match || location.pathname === '/home'
+                      );
+                    }}
+                  >
+                    Trang chủ
+                  </NavLink>
+                </li>
+                <li><Link className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to='/home?scrollTo=movie-selection' smooth={true} duration={500}>Lịch chiếu</Link></li>
+                <li><Link className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to="/home?scrollTo=theater-selection" smooth={true} duration={500}>Cụp rạp</Link></li>
 
-                </ul>
-                <div className="items-center flex-shrink-0 hidden lg:flex">
-
-                    {renderLogin()}
-
-                    <Select defaultValue="en" style={{ width: 100 }} onChange={handleChange}>
-                        <Option value="en">Eng</Option>
-                        <Option value="chi">Chi</Option>
-
-                        <Option value="vi">Vi</Option>
-                    </Select>
-
-                </div>
-                <button className="p-4 lg:hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6 text-coolGray-800">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+                <li><Link className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to="/home?scrollTo=new-selection" smooth={true} duration={500}>Tin tức</Link></li>
+                <li><Link className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to="/home?scrollTo=appli-selection" smooth={true} duration={500}>Ứng dụng</Link></li>
+                <li>{renderLogin()}</li>
+              </ul>
             </div>
-        </header>
 
+            <div id='mobile' onClick={handleClick}>
+              <i id='bar' className={Clicked ? "fas fa-times" : "fas fa-bars"}></i>
+            </div>
+          </nav>
+        </>
+      </div>
     )
+  }
+  return (
+    <div>
+      <>
+        <nav style={{
+          background: showHeader ? '#000' : 'transparent',
+          boxShadow: showHeader ? '0px 15px 10px -15px #111' : 'none'
+        }}>
+          <NavLink to="/home">
+            <img src='https://www.cgv.vn/skin/frontend/cgv/default/images/cgvlogo.png' alt="cgv" />
+          </NavLink>
+          <div>
+            <ul id='navbar' className={Clicked ? "#navbar active" : "#navbar"}>
+              <li>
+                {/* <NavLink className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to="/home">{t('homepage')}</NavLink> */}
+                <NavLink
+                  className='text-success-50 text-lg'
+                  activeClassName="border-b-2 border-white text-success-50 font-bold active"
+                  exact
+                  to="/"
+                  isActive={(match, location) => {
+                    return (
+                      match || location.pathname === '/home'
+                    );
+                  }}
+                >
+                  Trang chủ
+                </NavLink>
+              </li>
+              {/* <li><ScrollLink   className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to='theater-selection' smooth={true} offset={-100} duration={500}>{t('showtimes')}</ScrollLink></li> */}
+
+              <li><Link className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to='/home?scrollTo=movie-selection' smooth={true} duration={500}>Lịch Chiếu</Link></li>
+              <li><Link className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to="/home?scrollTo=theater-selection" smooth={true} duration={500}>Cụm rạp</Link></li>
+
+              <li><Link className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to="/home?scrollTo=new-selection" smooth={true} duration={500}>Tin tức</Link></li>
+              <li><Link className='active text-success-50 text-lg' activeClassName="border-b-2 border-white text-success-50 font-bold" to="/home?scrollTo=appli-selection" smooth={true} duration={500}>Ứng dụng</Link></li>
+              <li>{renderLogin()}</li>
+            </ul>
+          </div>
+
+          <div id='mobile' onClick={handleClick}>
+            <i id='bar' className={Clicked ? "fas fa-times" : "fas fa-bars"}></i>
+          </div>
+        </nav>
+      </>
+    </div>
+  )
 }

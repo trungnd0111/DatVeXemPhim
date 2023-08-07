@@ -2,21 +2,16 @@ import React, { useEffect, useState } from 'react';
 import {
   Form,
   Input,
-  Button,
-  Radio,
-  Select,
-  Cascader,
   DatePicker,
   InputNumber,
-  TreeSelect,
   Switch,
 } from 'antd';
 import { useFormik } from 'formik';
 import moment from 'moment';
-import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { capNhatPhimUploadAction, layThongTinPhimAction, themPhimUploadHinhAction } from '../../../../redux/actions/QuanLyPhimActions';
+import { capNhatPhimUploadAction, layThongTinPhimAction } from '../../../../redux/actions/QuanLyPhimActions';
 import { GROUPID } from '../../../../util/settings/config';
+import * as Yup from 'yup';
 
 const Edit = (props) => {
 
@@ -34,6 +29,15 @@ const Edit = (props) => {
 
   }, [])
 
+  const validationSchema = Yup.object({
+    tenPhim: Yup.string()
+      .required('Vui lòng điền tên phim cần sửa.'),
+    trailer: Yup.string()
+      .required('Vui lòng điền link trailer.'),
+    moTa: Yup.string()
+      .required('Vui lòng nhập mô tả phim.')
+      .min(9, 'Mô tả phim phải có ít nhất 9 số.'),
+  });
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -50,7 +54,7 @@ const Edit = (props) => {
       ngayKhoiChieu: thongTinPhim.ngayKhoiChieu,
       hinhAnh: null
     },
-
+    validationSchema,
     onSubmit: (values) => {
       console.log('values', values);
       values.maNhom = GROUPID;
@@ -133,21 +137,24 @@ const Edit = (props) => {
         size={componentSize}
       >
         <h3>Thêm mới phim </h3>
-        <Form.Item label="Form Size" name="size">
-          <Radio.Group>
-            <Radio.Button value="small">Small</Radio.Button>
-            <Radio.Button value="default">Default</Radio.Button>
-            <Radio.Button value="large">Large</Radio.Button>
-          </Radio.Group>
-        </Form.Item>
+
         <Form.Item label="Tên phim">
           <Input name="tenPhim" onChange={formik.handleChange} value={formik.values.tenPhim} />
+          {formik.touched.tenPhim && formik.errors.tenPhim ? (
+            <div className='text-red-600'>{formik.errors.tenPhim}</div>
+          ) : null}
         </Form.Item>
         <Form.Item label="Trailer">
           <Input name="trailer" onChange={formik.handleChange} value={formik.values.trailer} />
+          {formik.touched.trailer && formik.errors.trailer ? (
+            <div className='text-red-600'>{formik.errors.trailer}</div>
+          ) : null}
         </Form.Item>
         <Form.Item label="Mô tả">
           <Input name="moTa" onChange={formik.handleChange} value={formik.values.moTa} />
+          {formik.touched.moTa && formik.errors.moTa ? (
+            <div className='text-red-600'>{formik.errors.moTa}</div>
+          ) : null}
         </Form.Item>
         <Form.Item label="Ngày khởi chiếu">
           <DatePicker onChange={handleChangeDatePicker} format="DD/MM/YYYY" value={moment(formik.values.ngayKhoiChieu)} />
@@ -164,7 +171,7 @@ const Edit = (props) => {
 
 
         <Form.Item label="Số sao">
-          <InputNumber onChange={handleChangeInputNumber('danhGia')} value={formik.values.danhGia} />
+          <InputNumber min={1} max={10} onChange={handleChangeInputNumber('danhGia')} value={formik.values.danhGia} />
         </Form.Item>
 
         <Form.Item label="Hình ảnh">

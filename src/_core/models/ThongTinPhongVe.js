@@ -1,6 +1,9 @@
 export class ThongTinLichChieu {
     thongTinPhim = new ThongTinPhim();
     danhSachGhe = [];
+
+
+
 }
 
 

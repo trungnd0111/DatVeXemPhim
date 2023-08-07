@@ -6,16 +6,16 @@ const stateDefault = {
 
 
 
-export const QuanLyRapReducer = (state=stateDefault,action) =>{
+export const QuanLyRapReducer = (state = stateDefault, action) => {
 
     switch (action.type) {
-      
-        case SET_HE_THONG_RAP_CHIEU : {
+
+        case SET_HE_THONG_RAP_CHIEU: {
             state.heThongRapChieu = action.heThongRapChieu;
-            return {...state};
+            return { ...state };
         }
 
-        default: return {...state}
-            break;
+        default:
+            return { ...state }
     }
 }

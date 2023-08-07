@@ -1,21 +1,27 @@
+/* eslint-disable no-lone-blocks */
+
 import { DISPLAY_LOADING, HIDE_LOADING } from "../actions/types/LoadingType";
 
-const initialState = {
+
+
+const stateDefault = {
     isLoading: false
 }
 
-export const LoadingReducer = (state = initialState, action) => {
-    switch (action.type) {
 
-        case DISPLAY_LOADING: {
+
+export const LoadingReducer = (state = stateDefault, action) => {
+    switch (action.type) {
+        case DISPLAY_LOADING:{
             state.isLoading = true;
-            return { ...state }
-        }
-        case HIDE_LOADING: {
+            return {...state}
+        };
+        case HIDE_LOADING:{
             state.isLoading = false;
-            return { ...state }
+            return {...state}
         }
-        default:
-            return { ...state }
+        default: {
+            return {...state}
+        }
     }
 }

@@ -35,11 +35,13 @@ const stateDefault = {
           }
     ],
     dangChieu: true,
-    sapChieu:true,
+    sapChieu:false,
     arrFilmDefault: [],
-    filmDetail: {},
+    filmDetail:{},
 
-    thongTinPhim: {}
+    thongTinPhim:{}
+
+
 
 }
 
@@ -52,25 +54,30 @@ export const QuanLyPhimReducer = (state=stateDefault,action ) => {
             return {...state}
         }
         case SET_FILM_DANG_CHIEU: {
-            state.dangChieu = !state.dangChieu;
-
+            state.dangChieu = true;
+            state.sapChieu = false;
             state.arrFilm = state.arrFilmDefault.filter(film => film.dangChieu === state.dangChieu );
             return {...state}
         }
         case SET_FILM_SAP_CHIEU : {
-            state.sapChieu = !state.sapChieu;
-
+            state.dangChieu = false;
+            state.sapChieu = true;
             state.arrFilm = state.arrFilmDefault.filter(film => film.sapChieu === state.sapChieu );
             return {...state}
         }
-        case SET_CHI_TIET_PHIM: {
+
+        case SET_CHI_TIET_PHIM :{
             state.filmDetail = action.filmDetail;
             return {...state};
         }
+
         case SET_THONG_TIN_PHIM: {
             state.thongTinPhim = action.thongTinPhim;
-            return {...state};
+            return {...state}
         }
+
+
+
         default : return {...state}
     }
 }
